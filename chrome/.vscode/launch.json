@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "chrome",
+            "name": "Debug",
+            "request": "launch",
+            "url": "https://twitter.com/home"
+        }
+    ]
+}

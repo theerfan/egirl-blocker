@@ -1,0 +1,11 @@
+{
+    "manifest_version": 2,
+    "name": "OnlyFans Blocker",
+    "version": "1.0",
+    "description": "Blocks Twitter users with OnlyFans links in their bio",
+    "permissions": ["webRequest", "webNavigation", "webRequestBlocking", "*://*.twitter.com/*"],
+    "background": {
+      "scripts": ["background.js"]
+    },
+    "run_at": "document_end"
+  }
