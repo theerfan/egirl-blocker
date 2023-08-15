@@ -1,3 +1,12 @@
+let filterPhrases = ["onlyfans.com", "fansly.com"];
+
+// Load saved custom filter phrases from storage
+browser.storage.local.get("egirlblocker-filterPhrases", function (data) {
+    if (data.filterPhrases && data.filterPhrases.length) {
+        filterPhrases = filterPhrases.concat(data.filterPhrases);
+    }
+});
+
 function listener(details) {
     const filter = browser.webRequest.filterResponseData(details.requestId);
     const decoder = new TextDecoder("utf-8");
@@ -39,11 +48,18 @@ function listener(details) {
                 entry_id = tweets[i]["entryId"];
                 if (entry_id.includes("tweet") || entry_id.includes("conversationthread")) {
                     user = tweets[i]["content"]["itemContent"]["tweet_results"]["results"]["core"]["user_results"]["result"]["legacy"];
+                    user_bio = user["description"];
+                    // If user's bio contains the filter phrases, then block the tweet
+                    if (filterPhrases.some(phrase => user_bio.includes(phrase))) {
+                        tweets.splice(i, 1);
+                        i--;
+                        continue;
+                    }
                     user_urls = user["entities"]["url"]["urls"];
-                    // If user's url contains "onlyfans.com", or "fansly.com", then block the tweet
+                    // If user's urls contains the filter phrases, then block the tweet
                     for (let j = 0; j < user_urls.length; j++) {
-                        exp_url = user_urls[j]["expanded_url"];
-                        if (exp_url.includes("onlyfans.com") || exp_url.includes("fansly.com")) {
+                        const exp_url = user_urls[j]["expanded_url"];
+                        if (filterPhrases.some(phrase => exp_url.includes(phrase))) {
                             tweets.splice(i, 1);
                             i--;
                             break;
